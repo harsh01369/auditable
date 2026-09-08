@@ -107,7 +107,7 @@ export function buildEvidence(request: JudgementRequest): string {
     return `[${i}] selector=${JSON.stringify(e.selector)} role=${e.role ?? 'generic'}${name}${text}\n    html: ${e.html.slice(0, 320)}`;
   });
 
-  const tree = flattenAxTree(snapshot.accessibilityTree).slice(0, 160);
+  const tree = flattenAxTree(snapshot.accessibilityTree).slice(0, 80);
   const settled = [...settledCriteria].sort().join(', ') || 'none';
 
   return `PAGE
@@ -125,6 +125,75 @@ ELEMENTS (${elements.length} of ${snapshot.elements.length} captured; you may on
 ${elements.join('\n')}
 
 Report every genuine failure you can substantiate from the evidence above, and nothing else.`;
+}
+
+/**
+ * Split a page into batches of elements small enough to fit a provider's
+ * per-request budget.
+ *
+ * Batching is not only a workaround for token limits. A model asked to judge
+ * thirty elements attends to each of them; asked to judge two hundred, it
+ * skims and reports the most obvious few. Smaller batches find more.
+ *
+ * The accessibility tree is carried on the first batch only. It is page-wide
+ * context, and repeating it in every batch would spend most of the budget on
+ * the same text.
+ */
+export function chunkForJudgement(snapshot: PageSnapshot, batchSize: number): PageSnapshot[] {
+  if (snapshot.elements.length <= batchSize) return [snapshot];
+  const batches: PageSnapshot[] = [];
+  for (let i = 0; i < snapshot.elements.length; i += batchSize) {
+    batches.push({
+      ...snapshot,
+      elements: snapshot.elements.slice(i, i + batchSize),
+      accessibilityTree: i === 0 ? snapshot.accessibilityTree : [],
+    });
+  }
+  return batches;
+}
+
+export interface BatchOptions {
+  batchSize?: number;
+  /** Pause between batches, to stay inside per-minute token budgets. */
+  delayMs?: number;
+  onProgress?: (message: string) => void;
+}
+
+/**
+ * Run the judgement pass over a page in batches and collect the claims.
+ *
+ * A batch that fails is logged and skipped rather than failing the audit: a
+ * partial judgement pass is still worth having, and the report discloses how
+ * much of the page was judged.
+ */
+export async function judgeInBatches(
+  provider: JudgementProvider,
+  request: JudgementRequest,
+  options: BatchOptions = {},
+): Promise<{ claims: ClaimedFinding[]; batchesRun: number; batchesFailed: number }> {
+  const batchSize = options.batchSize ?? 30;
+  const delayMs = options.delayMs ?? 0;
+  const log = options.onProgress ?? (() => {});
+
+  const batches = chunkForJudgement(request.snapshot, batchSize);
+  const claims: ClaimedFinding[] = [];
+  let batchesFailed = 0;
+
+  for (const [index, batch] of batches.entries()) {
+    try {
+      const result = await provider.judge({ ...request, snapshot: batch });
+      claims.push(...result);
+      log(`    batch ${index + 1}/${batches.length}: ${result.length} claim(s)`);
+    } catch (error) {
+      batchesFailed++;
+      log(`    batch ${index + 1}/${batches.length} failed: ${(error as Error).message.slice(0, 160)}`);
+    }
+    if (delayMs > 0 && index < batches.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return { claims, batchesRun: batches.length, batchesFailed };
 }
 
 /** Shape-check provider output and drop anything malformed before verification. */

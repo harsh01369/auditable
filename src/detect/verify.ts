@@ -73,6 +73,24 @@ export interface VerifyContext {
    * automation has already settled.
    */
   deterministicallyClean: Set<string>;
+  /**
+   * Findings the rule engine already reported. The judgement pass exists to add
+   * what automation cannot see, so restating an engine finding is noise, and
+   * noise in a compliance report costs credibility.
+   */
+  existingFindings?: Finding[];
+}
+
+/**
+ * Identity of a defect, independent of how the selector happens to be spelled.
+ *
+ * axe and the model routinely describe the same element differently: one says
+ * `img[src$="border.gif"]`, the other a long nth-of-type path. Comparing
+ * selectors as strings would treat those as different defects, so identity is
+ * taken from the criterion plus the element's own markup.
+ */
+export function defectKey(criterionId: string, elementHtml: string): string {
+  return `${criterionId}|${normalise(elementHtml)}`;
 }
 
 /**
@@ -132,6 +150,16 @@ export function verifyClaim(
   if (contradictsDeterministic) {
     return reject(
       `Success criterion ${claim.criterionId} is fully decidable by the rule engine, which reported no violation on this page.`,
+    );
+  }
+
+  // 5. The judgement pass must add information, not restate the rule engine.
+  const alreadyReported = (context.existingFindings ?? []).some(
+    (f) => defectKey(f.criterionId, f.element.html) === defectKey(claim.criterionId, element.html),
+  );
+  if (alreadyReported) {
+    return reject(
+      `The rule engine already reported ${claim.criterionId} on this element; the judgement pass is for defects automation cannot see.`,
     );
   }
 

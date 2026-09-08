@@ -7,6 +7,15 @@
 
 import { writeFileSync } from 'node:fs';
 import { audit } from './audit';
+import { renderReport } from './report/render';
+
+// Load .env if present. Keys stay on disk and out of the shell history.
+try {
+  process.loadEnvFile('.env');
+} catch {
+  // No .env is fine: the audit falls back to the deterministic pass alone.
+}
+
 import { automationCoverage } from './core/wcag';
 import {
   AnthropicJudgementProvider,
@@ -21,15 +30,21 @@ function parseArgs(argv: string[]) {
   let providerName: string | undefined;
   let json: string | undefined;
   let screenshot = false;
+  let report: string | undefined;
+  let batchSize: number | undefined;
+  let delayMs: number | undefined;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
     if (arg === '--provider') providerName = argv[++i];
     else if (arg === '--json') json = argv[++i];
     else if (arg === '--screenshot') screenshot = true;
+    else if (arg === '--report') report = argv[++i];
+    else if (arg === '--batch-size') batchSize = Number(argv[++i]);
+    else if (arg === '--delay') delayMs = Number(argv[++i]);
     else if (!arg.startsWith('--')) urls.push(arg);
   }
-  return { urls, providerName, json, screenshot };
+  return { urls, providerName, json, report, screenshot, batchSize, delayMs };
 }
 
 function chooseProvider(name?: string): JudgementProvider {
@@ -46,7 +61,7 @@ function chooseProvider(name?: string): JudgementProvider {
 }
 
 async function main() {
-  const { urls, providerName, json, screenshot } = parseArgs(process.argv.slice(2));
+  const { urls, providerName, json, report, screenshot, batchSize, delayMs } = parseArgs(process.argv.slice(2));
   if (urls.length === 0) {
     console.error('Usage: tsx src/cli.ts <url> [...] [--provider anthropic|groq|none] [--json out.json]');
     process.exit(1);
@@ -66,6 +81,8 @@ async function main() {
     urls,
     provider,
     screenshot,
+    batchSize,
+    judgementDelayMs: delayMs,
     onProgress: (m) => console.log(m),
   });
 

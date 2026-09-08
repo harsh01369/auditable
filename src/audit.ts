@@ -18,7 +18,7 @@ import { CaptureIntegrityError, checkIntegrity } from './capture/integrity';
 import { runDeterministic } from './detect/deterministic';
 import { verifyClaims } from './detect/verify';
 import { NullJudgementProvider } from './detect/providers';
-import type { JudgementProvider } from './detect/judgement';
+import { judgeInBatches, type JudgementProvider } from './detect/judgement';
 import type {
   AuditResult,
   CriterionCoverage,
@@ -31,6 +31,10 @@ export interface AuditOptions {
   urls: string[];
   provider?: JudgementProvider;
   screenshot?: boolean;
+  /** Elements sent to the judgement provider per request. */
+  batchSize?: number;
+  /** Pause between judgement batches, to respect per-minute token budgets. */
+  judgementDelayMs?: number;
   /** Called with progress messages, so the CLI can report without this module printing. */
   onProgress?: (message: string) => void;
 }
@@ -76,13 +80,22 @@ export async function audit(options: AuditOptions): Promise<AuditResult> {
 
         if (provider.name !== 'none') {
           log(`  running judgement pass via ${provider.name}`);
-          const claims = await provider.judge({
-            snapshot,
-            settledCriteria: deterministic.clean,
-          });
+          const { claims, batchesRun, batchesFailed } = await judgeInBatches(
+            provider,
+            { snapshot, settledCriteria: deterministic.clean },
+            {
+              batchSize: options.batchSize,
+              delayMs: options.judgementDelayMs,
+              onProgress: log,
+            },
+          );
+          if (batchesFailed > 0) {
+            log(`  warning: ${batchesFailed} of ${batchesRun} batches failed; this page was only partly judged`);
+          }
           const outcome = verifyClaims(claims, {
             snapshot,
             deterministicallyClean: deterministic.clean,
+            existingFindings: deterministic.findings,
           });
           findings.push(...outcome.accepted);
           rejected.push(...outcome.rejected);

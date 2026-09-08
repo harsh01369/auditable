@@ -72,7 +72,9 @@ export class GroqJudgementProvider implements JudgementProvider {
     const key = options.apiKey ?? process.env.GROQ_API_KEY;
     if (!key) throw new Error('GROQ_API_KEY is not set.');
     this.apiKey = key;
-    this.model = options.model ?? process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile';
+    // Verify against GET /openai/v1/models before changing this: Groq's
+    // catalogue turns over, and a stale default fails with a 404 at run time.
+    this.model = options.model ?? process.env.GROQ_MODEL ?? 'openai/gpt-oss-120b';
     this.name = `groq:${this.model}`;
   }
 
@@ -92,19 +94,7 @@ Respond with a single JSON object of the form {"findings": [...]}, where each fi
       ],
     };
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      const detail = await response.text();
-      throw new Error(`Groq request failed (${response.status}): ${detail.slice(0, 400)}`);
-    }
+    const response = await this.postWithRetry(body);
 
     const json = (await response.json()) as {
       choices?: { message?: { content?: string } }[];
@@ -119,6 +109,49 @@ Respond with a single JSON object of the form {"findings": [...]}, where each fi
       // the correct outcome: no claims, rather than guessed ones.
       return [];
     }
+  }
+
+  /**
+   * Groq enforces a tokens-per-minute budget and answers 429 when it is
+   * exceeded, telling us how long to wait. Honour that rather than hammering:
+   * on the free tier, waiting is the difference between an audit that
+   * completes and one that reports nothing.
+   */
+  private async postWithRetry(body: unknown, attempts = 4): Promise<Response> {
+    let lastDetail = '';
+    for (let attempt = 0; attempt < attempts; attempt++) {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) return response;
+
+      lastDetail = await response.text();
+      // A 400 "failed to generate JSON" is a sampling failure, not a bad
+      // request: the same prompt usually succeeds on a retry. Losing a batch to
+      // it means losing part of the page, so it is worth retrying.
+      const jsonSamplingFailure =
+        response.status === 400 && /failed to generate json/i.test(lastDetail);
+      const retryable = response.status === 429 || response.status >= 500 || jsonSamplingFailure;
+      if (!retryable || attempt === attempts - 1) {
+        throw new Error(`Groq request failed (${response.status}): ${lastDetail.slice(0, 300)}`);
+      }
+
+      const header = response.headers.get('retry-after');
+      const waitSeconds = header
+        ? Number(header)
+        : Number(/try again in ([\d.]+)s/i.exec(lastDetail)?.[1] ?? 0);
+      const delay = Number.isFinite(waitSeconds) && waitSeconds > 0
+        ? waitSeconds * 1000 + 500
+        : 2000 * 2 ** attempt;
+      await new Promise((resolve) => setTimeout(resolve, Math.min(delay, 65_000)));
+    }
+    throw new Error(`Groq request failed after ${attempts} attempts: ${lastDetail.slice(0, 300)}`);
   }
 }
 

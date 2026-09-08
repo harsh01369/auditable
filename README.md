@@ -76,17 +76,36 @@ npm test                  # 27 tests, mostly on the verification layer
 
 npx tsx src/cli.ts https://example.com --provider none          # engine only
 npx tsx src/cli.ts https://example.com --provider anthropic     # full audit
-npx tsx src/cli.ts https://example.com --json report.json
+npx tsx src/cli.ts https://example.com --json result.json --report report.html
+npx tsx src/cli.ts https://example.com --provider groq --batch-size 22 --delay 32000
 ```
+
+`--report` writes the evidence pack: findings with the element, the markup as
+served, the success criterion and its EN 301 549 clause; a coverage table for all
+55 criteria; the claims rejected during verification, published rather than
+hidden; and a draft accessibility statement that deliberately will not claim full
+conformance.
+
+The judgement pass is batched. Small batches are not only a way to fit token
+budgets: a model asked to judge thirty elements attends to each of them, where
+one asked to judge two hundred skims and reports the obvious few.
 
 Without a key the judgement pass is skipped and the audit runs deterministically,
 which is honest but is only a small part of a real audit.
 
 ## Status
 
-Working end to end. The judgement pass is implemented against Claude Opus 5 and
-Groq but has not yet been evaluated for precision against a labelled corpus,
-so no accuracy claim is made here. The reporting layer and accessibility
-statement generator are not built yet.
+Working end to end, including the report and the draft accessibility statement.
+
+On the W3C's demonstration page the rule engine records 53 findings and the
+judgement pass adds 7 that it structurally cannot see, all of them 2.4.4 link
+purpose: link text such as "public", "Member" and an unexplained "WAI-AGE"
+acronym. In the same run verification rejected 6 further claims because the rule
+engine had already reported those defects, and the report lists them as rejected
+rather than counting them.
+
+The judgement pass has not been evaluated for precision against a labelled
+corpus, so no accuracy figure is claimed here. That evaluation is the next thing
+worth building.
 
 This is not legal advice.

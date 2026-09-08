@@ -192,3 +192,48 @@ describe('verifying a batch', () => {
     expect(a).not.toBe(c);
   });
 });
+
+describe('not restating the rule engine', () => {
+  const engineFinding = {
+    id: 'x',
+    pageUrl: snapshot.url,
+    criterionId: '1.1.1',
+    source: 'deterministic' as const,
+    severity: 'serious' as const,
+    summary: 'Images must have alternative text',
+    reasoning: '',
+    // axe describes the element with its own selector dialect.
+    element: {
+      selector: 'img[src$="sale.png"]',
+      html: '<img id="promo-img" src="/sale.png" alt="image">',
+      text: '',
+    },
+    engineRuleId: 'image-alt',
+  };
+
+  it('rejects a claim about a defect the engine already reported, despite a different selector', () => {
+    const outcome = verifyClaim(validClaim, { ...context, existingFindings: [engineFinding] });
+    if (!('rejected' in outcome)) throw new Error('expected rejection');
+    expect(outcome.rejected.reason).toMatch(/already reported/);
+  });
+
+  it('still accepts a different criterion on the same element', () => {
+    const outcome = verifyClaim(
+      { ...validClaim, criterionId: '2.5.3' },
+      { ...context, existingFindings: [engineFinding] },
+    );
+    expect('finding' in outcome).toBe(true);
+  });
+
+  it('still accepts the same criterion on a different element', () => {
+    const outcome = verifyClaim(
+      {
+        ...validClaim,
+        selector: 'main > a:nth-of-type(2)',
+        quotedHtml: 'Read more',
+      },
+      { ...context, existingFindings: [engineFinding] },
+    );
+    expect('finding' in outcome).toBe(true);
+  });
+});
