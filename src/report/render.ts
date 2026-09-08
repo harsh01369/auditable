@@ -73,7 +73,7 @@ export function renderReport(result: AuditResult, inputs: StatementInputs = {}):
 <title>Accessibility conformance report - ${escapeHtml(result.siteUrl)}</title>
 <style>
   :root {
-    --ink: #14181d; --ink-soft: #414b57; --ink-faint: #6d7885;
+    --ink: #14181d; --ink-soft: #414b57; --ink-faint: #5f6a76;
     --paper: #ffffff; --sunk: #f4f2ee; --edge: #ddd8ce;
     --fail: #a2303a; --pass: #1e6b58; --review: #8a6a2f;
   }

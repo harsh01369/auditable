@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditable — European Accessibility Act conformance audits with evidence</title>
+<meta name="description" content="An accessibility audit for the European Accessibility Act that shows its working. Every finding cites the success criterion, the element and the markup as served. Fixed price, from €290.">
+<link rel="canonical" href="https://harsh01369.github.io/auditable/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Accessibility audits that show their working">
+<meta property="og:description" content="A clean scan is not conformance. Automation fully decides 4 of the 55 WCAG 2.2 AA criteria. We audit the rest, and prove every finding.">
+<meta property="og:url" content="https://harsh01369.github.io/auditable/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314181d'/%3E%3Cpath d='M9 17.5l4.5 4.5L23 12' stroke='%23fbfaf7' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink:#14181d; --ink-soft:#414b57; --ink-faint:#5f6a76;
+    --paper:#fbfaf7; --raised:#fff; --sunk:#f2efe9; --edge:#e0dbd1;
+    --fail:#a2303a; --pass:#1e6b58; --accent:#8a6a2f;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font:16px/1.65 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:62rem;margin:0 auto;padding:0 1.5rem}
+  h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;letter-spacing:-.01em;font-weight:600}
+  h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.12;margin:0 0 1.25rem}
+  h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.2;margin:0 0 1rem}
+  h3{font-size:1.1rem;margin:0 0 .4rem}
+  p{max-width:64ch;margin:0 0 1rem;color:var(--ink-soft)}
+  .lede{font-size:1.15rem;color:var(--ink-soft)}
+  strong{color:var(--ink);font-weight:600}
+  a{color:var(--ink)}
+  header{border-bottom:1px solid var(--edge);background:var(--paper)}
+  header .wrap{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding-top:1rem;padding-bottom:1rem}
+  .brand{font-family:"Source Serif 4",serif;font-weight:600;font-size:1.15rem}
+  .kicker{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);font-weight:600}
+  section{padding:3.5rem 0;border-bottom:1px solid var(--edge)}
+  .hero{padding:4.5rem 0}
+  .cols{display:grid;gap:2rem;grid-template-columns:1fr}
+  @media(min-width:820px){.cols-2{grid-template-columns:1fr 1fr}.cols-3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--raised);border:1px solid var(--edge);border-radius:6px;padding:1.4rem}
+  .stat{border-left:3px solid var(--accent);padding-left:1rem;margin:1.5rem 0}
+  .stat .n{font-family:"Source Serif 4",serif;font-size:2.1rem;line-height:1;color:var(--ink)}
+  .stat .l{font-size:.85rem;color:var(--ink-faint)}
+  .quote{background:var(--sunk);border:1px solid var(--edge);border-left:3px solid var(--fail);
+         padding:1.25rem 1.4rem;border-radius:4px;margin:1.5rem 0}
+  .quote p{margin:0}
+  ul{padding-left:1.15rem;color:var(--ink-soft);max-width:64ch}
+  li{margin:.4rem 0}
+  .price{display:flex;flex-direction:column;height:100%}
+  .price .amt{font-family:"Source Serif 4",serif;font-size:2.4rem;line-height:1;margin:.4rem 0 .2rem}
+  .price .per{font-size:.85rem;color:var(--ink-faint);margin-bottom:1rem}
+  .price ul{padding-left:1.1rem;font-size:.93rem;flex:1}
+  .btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;
+       padding:.7rem 1.3rem;border-radius:5px;font-weight:500;font-size:.95rem;border:1px solid var(--ink)}
+  .btn:hover{background:#000}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
+  .note{font-size:.85rem;color:var(--ink-faint)}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0}
+  th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--edge);vertical-align:top}
+  th{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint)}
+  footer{padding:2.5rem 0;font-size:.85rem;color:var(--ink-faint)}
+  code{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--sunk);
+       padding:.1rem .3rem;border-radius:3px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="brand">Auditable</span>
+    <span class="note">EN 301 549 &middot; WCAG 2.2 AA</span>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kicker">European Accessibility Act</p>
+    <h1>An accessibility audit that shows its working.</h1>
+    <p class="lede">Every finding names the success criterion, the element, and the markup exactly as your server sent it. You can check all of it. So can your developer, and so can a court.</p>
+    <p style="margin-top:1.5rem">
+      <a class="btn" href="#pricing">See pricing</a>
+      <a class="btn ghost" href="sample-report.html">Read a real report</a>
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why this is urgent, and why it is unusually easy to get wrong</h2>
+    <div class="cols cols-2">
+      <div>
+        <p>The European Accessibility Act has been enforceable since <strong>28 June 2025</strong>. In Germany, e-commerce operators are already receiving warning letters from law firms, because competition law there lets private parties act on non-compliance. In France, injunctions were filed in November 2025 against Auchan, Carrefour, E.Leclerc and Picard.</p>
+        <p>Penalties reach <strong>€100,000</strong>, and authorities can also require an audit, ban a non-compliant service, or name the business publicly.</p>
+      </div>
+      <div>
+        <div class="quote">
+          <p><strong>In April 2025 the FTC ordered accessiBe to pay $1,000,000</strong> for claiming its widget could make any website WCAG compliant. Courts have consistently rejected overlay defences, and in the first half of 2025, <strong>22.6% of US web accessibility lawsuits targeted sites that had an overlay installed</strong>.</p>
+        </div>
+        <p class="note">An overlay is not a defence. On the evidence, it is a liability with a subscription attached.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The number nobody selling you a scanner will show you</h2>
+    <div class="stat">
+      <div class="n">4 of 55</div>
+      <div class="l">WCAG 2.2 Level A and AA criteria that a rule engine can fully decide on its own</div>
+    </div>
+    <p>Another 29 are only partly automatable. <strong>22 cannot be assessed by any automated method at all.</strong></p>
+    <p>A scanner can tell you an image has no <code>alt</code> attribute. It cannot tell you that the alt text reads <code>"image"</code>, that a link labelled <code>"read more"</code> fails 2.4.4, or that a heading does not describe the section beneath it. That judgement is most of an audit, which is why a clean scan is not conformance and why a green dashboard is not a defence.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How we do it</h2>
+    <div class="cols cols-3">
+      <div class="card">
+        <p class="kicker">Pass one</p>
+        <h3>Rule engine</h3>
+        <p style="font-size:.95rem">axe-core settles what can be decided mechanically. Reproducible: anyone can re-run it and get the same answer.</p>
+      </div>
+      <div class="card">
+        <p class="kicker">Pass two</p>
+        <h3>Judgement</h3>
+        <p style="font-size:.95rem">A model reads the rendered DOM, the browser-computed accessibility tree and every interactive element, and reports what the engine structurally cannot see.</p>
+      </div>
+      <div class="card" style="border-color:var(--accent)">
+        <p class="kicker" style="color:var(--accent)">Pass three</p>
+        <h3>Verification</h3>
+        <p style="font-size:.95rem">Every claim is checked against the captured page before it is allowed to be called a finding. Anything unsubstantiated is discarded and listed as rejected.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2.5rem">What verification actually means</h3>
+    <p>A claim reaches your report only if it survives all five checks:</p>
+    <ul>
+      <li>the success criterion it cites exists in WCAG 2.2 A/AA;</li>
+      <li>its selector resolves to exactly one element we really captured;</li>
+      <li>the markup it quotes genuinely appears in that element;</li>
+      <li>it does not overturn a criterion the rule engine fully decided and found clean;</li>
+      <li>it does not restate a defect the rule engine already reported.</li>
+    </ul>
+    <p><strong>The model is allowed to be wrong. It is not allowed to be believed.</strong> That distinction is the entire difference between this and the product a regulator fined a million dollars.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What we refuse to do</h2>
+    <div class="cols cols-2">
+      <div>
+        <h3>We will not call absence of findings a pass</h3>
+        <p>Every one of the 55 criteria is reported as failed, passed, not established, or needing a person. Only criteria a rule engine fully decides and found clean are reported as passing. On our published sample that is <strong>1 criterion out of 55</strong>, and the report says so on the first page.</p>
+      </div>
+      <div>
+        <h3>We will not audit the wrong page</h3>
+        <p>Bot challenges, cookie walls, login screens and error pages all return HTTP 200 and all look clean to a scanner. Our tooling refuses to audit any page it cannot show is the real page. We found this the hard way, auditing a Cloudflare interstitial and nearly believing the result.</p>
+      </div>
+    </div>
+    <p style="margin-top:1.5rem">We also publish the claims we rejected, inside your report. A report that hides its rejects is indistinguishable from one that never made any, and you deserve to judge the method rather than trust it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>See it before you buy it</h2>
+    <p>Here is a complete, unedited report produced by the engine against the W3C's own demonstration page, which is published specifically so accessibility tools can be tested against it. Nothing has been tidied up.</p>
+    <p style="margin-top:1.25rem"><a class="btn" href="sample-report.html">Read the full sample report</a></p>
+    <p class="note" style="margin-top:1rem">60 findings with evidence, a coverage table for all 55 criteria, the rejected claims, and a draft accessibility statement.</p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <p>Fixed price, quoted before we start. For comparison, a conventional manual audit runs from about $2,000 to $8,500 and takes weeks.</p>
+    <div class="cols cols-2" style="margin-top:1.75rem">
+      <div class="card price">
+        <p class="kicker">Essential</p>
+        <div class="amt">€290</div>
+        <div class="per">one-off, up to 5 pages</div>
+        <ul>
+          <li>Your five highest-risk pages: home, category, product, basket, checkout</li>
+          <li>Full evidence pack, every finding with element and markup</li>
+          <li>Coverage across all 55 Level A and AA criteria</li>
+          <li>Concrete code fixes, never an overlay</li>
+          <li>Draft accessibility statement for publication</li>
+        </ul>
+        <p><a class="btn" id="buy-essential" href="#contact">Request this audit</a></p>
+      </div>
+      <div class="card price" style="border-color:var(--accent)">
+        <p class="kicker" style="color:var(--accent)">Complete</p>
+        <div class="amt">€890</div>
+        <div class="per">one-off, up to 25 pages</div>
+        <ul>
+          <li>Everything in Essential, across your full core journey</li>
+          <li>Prioritised remediation plan, ordered by legal exposure</li>
+          <li>A written record of what was tested and what still needs a person</li>
+          <li><strong>Re-audit after your fixes</strong>, so you can show you acted</li>
+          <li>A call with your developers to walk the findings</li>
+        </ul>
+        <p><a class="btn" id="buy-complete" href="#contact">Request this audit</a></p>
+      </div>
+    </div>
+    <p class="note" style="margin-top:1.25rem">Neither tier certifies conformance, because no audit honestly can on its own. Criteria requiring keyboard operation, screen reader testing and human judgement are reported as such, and we will tell you plainly what remains.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>You may not need us at all</h2>
+    <p>The EAA exempts microenterprises from its <em>service</em> accessibility requirements. If you have <strong>fewer than 10 employees and under €2 million</strong> in annual turnover or balance sheet total, you are very likely exempt and should not be paying anyone for this.</p>
+    <table>
+      <thead><tr><th>Condition</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Both must hold</td><td>Under 10 staff <strong>and</strong> under €2m. Exceeding either threshold removes the exemption.</td></tr>
+        <tr><td>Services only</td><td>The exemption does not extend to covered products.</td></tr>
+        <tr><td>Groups aggregate</td><td>Parent, subsidiary and linked enterprise figures are counted together.</td></tr>
+        <tr><td>No grace period</td><td>The exemption disappears the moment you cross a threshold.</td></tr>
+      </tbody>
+    </table>
+    <p>If that describes you, take the free route: run <a href="https://github.com/harsh01369/auditable">the engine yourself</a>. It is open source and the deterministic pass needs no key.</p>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <h2>Request an audit</h2>
+    <p>Tell us the site, roughly how many pages matter, and any deadline you are working to. You get a fixed quote and a start date, or an honest answer that you do not need this.</p>
+    <p id="contact-slot" class="note">Contact details are being finalised. In the meantime, open an issue on
+      <a href="https://github.com/harsh01369/auditable/issues">the GitHub repository</a> and we will reply there.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="note">Auditable assesses conformance with WCAG 2.2 Level A and AA as adopted by EN 301 549. It is not a law firm and this page is not legal advice. Enforcement details cited here are drawn from public reporting and the FTC's April 2025 order against accessiBe; verify anything you intend to rely on. The engine is open source at <a href="https://github.com/harsh01369/auditable">github.com/harsh01369/auditable</a>.</p>
+  </div>
+</footer>
+
+<script>
+  // Checkout links are injected only when configured, so the page never shows a
+  // buy button that leads nowhere.
+  (function () {
+    var LINKS = { essential: '', complete: '' };
+    Object.keys(LINKS).forEach(function (tier) {
+      var el = document.getElementById('buy-' + tier);
+      if (el && LINKS[tier]) {
+        el.setAttribute('href', LINKS[tier]);
+        el.textContent = 'Book this audit';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
