@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Marlow Ceramics - Checkout</title>
+  <style>
+    body{font:16px/1.5 system-ui,sans-serif;color:#1a1a1a;background:#fff;margin:0;padding:2rem}
+    main{max-width:56rem;margin:0 auto}
+    a{color:#0b4f8a}
+    .row{margin:1.1rem 0}
+    label{display:block}
+    input,select{display:block;padding:.4rem;border:1px solid #767676;min-width:16rem}
+    button{padding:.6rem 1rem;background:#0b4f8a;color:#fff;border:1px solid #0b4f8a}
+    .basket div{padding:.3rem 0;border-bottom:1px solid #ccc}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Checkout</h1>
+
+  <h2>Your basket</h2>
+
+  <!-- DISTRACTOR: sufficient, specific alternative text. -->
+  <img id="ho-good-alt" src="mug.png" width="120" height="120"
+       alt="Stoneware mug in oatmeal glaze, 350ml">
+  <p>Stoneware mug, oatmeal glaze</p>
+
+  <!-- DEFECT 1.1.1: alt names the medium, not the content. -->
+  <img id="ho-alt-picture" src="bowl.png" width="120" height="120" alt="picture">
+  <p>Serving bowl, cobalt glaze</p>
+
+  <!-- DEFECT 1.1.1: alt is an asset path. -->
+  <img id="ho-alt-assetpath" src="vase.png" width="120" height="120" alt="assets/product/vase-01.svg">
+  <p>Bud vase, unglazed</p>
+
+  <!-- DEFECT 1.1.1: alt repeats the visible caption verbatim. -->
+  <img id="ho-alt-echo" src="set.png" width="120" height="120" alt="Complete dinner set for four people">
+  <p>Complete dinner set for four people</p>
+
+  <!-- DISTRACTOR: decorative, correctly hidden from assistive technology. -->
+  <img id="ho-good-decorative" src="rule.png" width="400" height="6" alt="">
+
+  <h2>Delivery</h2>
+
+  <!-- DISTRACTOR: properly associated label. -->
+  <div class="row">
+    <label for="ho-good-addr">Delivery address line 1</label>
+    <input id="ho-good-addr" name="addr" type="text">
+  </div>
+
+  <!-- DEFECT 3.3.2: placeholder standing in for a label. -->
+  <div class="row">
+    <input id="ho-placeholder-city" name="city" type="text" placeholder="Town or city">
+  </div>
+
+  <!-- DEFECT 3.3.2: label is adjacent text only, never associated. -->
+  <div class="row">
+    <span>Delivery instructions</span>
+    <input id="ho-adjacent-instructions" name="instructions" type="text">
+  </div>
+
+  <!-- DISTRACTOR: labelled by aria-label. -->
+  <div class="row">
+    <input id="ho-good-phone" name="phone" type="tel" aria-label="Contact telephone number">
+  </div>
+
+  <h2>Order summary</h2>
+
+  <!-- DEFECT 1.3.1: name and value pairs rendered as generic divs, so the
+       relationship exists only visually. -->
+  <div id="ho-fake-list" class="basket">
+    <div><strong>Subtotal</strong> £48.00</div>
+    <div><strong>Delivery</strong> £4.95</div>
+    <div><strong>Total</strong> £52.95</div>
+  </div>
+
+  <!-- DISTRACTOR: the same information expressed semantically. -->
+  <table id="ho-good-table">
+    <caption>Estimated delivery</caption>
+    <thead><tr><th scope="col">Service</th><th scope="col">Days</th></tr></thead>
+    <tbody><tr><td>Standard</td><td>3 to 5</td></tr></tbody>
+  </table>
+
+  <h2>Help</h2>
+  <ul>
+    <!-- DISTRACTOR: link text describes the destination. -->
+    <li><a id="ho-good-link" href="/delivery">See full delivery options and costs</a></li>
+
+    <!-- DEFECT 2.4.4: generic call to action. -->
+    <li>We deliver across the UK. <a id="ho-link-learnmore" href="/delivery-areas">Learn more</a></li>
+
+    <!-- DEFECT 2.4.4: refers to itself rather than its destination. -->
+    <li>Returns are free within 30 days. <a id="ho-link-thispage" href="/returns">this page</a></li>
+
+    <!-- DEFECT 2.4.4: single vague noun. -->
+    <li>Gift wrapping is available. <a id="ho-link-details" href="/gift-wrap">Details</a></li>
+  </ul>
+
+  <!-- DEFECT 2.5.3: visible text is absent from the accessible name, so a
+       speech input user saying "Place order" cannot operate it. -->
+  <div class="row">
+    <button id="ho-name-mismatch" type="submit" aria-label="Confirm">Place order</button>
+  </div>
+</main>
+</body>
+</html>

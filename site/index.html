@@ -179,6 +179,18 @@
     <p>Here is a complete, unedited report produced by the engine against the W3C's own demonstration page, which is published specifically so accessibility tools can be tested against it. Nothing has been tidied up.</p>
     <p style="margin-top:1.25rem"><a class="btn" href="sample-report.html">Read the full sample report</a></p>
     <p class="note" style="margin-top:1rem">60 findings with evidence, a coverage table for all 55 criteria, the rejected claims, and a draft accessibility statement.</p>
+
+    <h3 style="margin-top:2.5rem">And here is how accurate it is</h3>
+    <p>We publish a measured figure rather than an adjective. On a held-out corpus of planted defects and deliberately correct distractors, written after the system was tuned and run once:</p>
+    <table>
+      <thead><tr><th>Measure</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Defects a rule engine structurally cannot catch</td><td><strong>5 of 7 found (71%)</strong></td></tr>
+        <tr><td>The same defects, rule engine alone</td><td>0 of 7</td></tr>
+        <tr><td>False positives on correct elements</td><td><strong>0 of 6</strong></td></tr>
+      </tbody>
+    </table>
+    <p>On the corpus we tuned against, the figure is 88%. We quote the 71%, because a score from the pages you tuned on is a score you gave yourself. The <a href="https://github.com/harsh01369/auditable/blob/master/EVALUATION.md">full method, the known weaknesses and what the numbers are not</a> are published too.</p>
   </div>
 </section>
 

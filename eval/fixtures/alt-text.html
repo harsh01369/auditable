@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Northwind Cycles - Summer collection</title>
+  <style>
+    body{font:16px/1.5 system-ui,sans-serif;color:#1a1a1a;background:#fff;margin:0;padding:2rem}
+    main{max-width:60rem;margin:0 auto}
+    .card{border:1px solid #767676;padding:1rem;margin:1rem 0}
+    a{color:#0b4f8a}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Summer collection</h1>
+
+  <!-- DISTRACTOR: genuinely good alternative text. Reporting this is a false positive. -->
+  <div class="card">
+    <img id="good-alt-1" src="bike.png" width="200" height="120"
+         alt="A steel touring bicycle loaded with four panniers on a gravel track">
+    <p>The Longhaul tourer, built for loaded riding.</p>
+  </div>
+
+  <!-- DEFECT 1.1.1: alt is the word "image", which conveys nothing. -->
+  <div class="card">
+    <img id="alt-says-image" src="offer.png" width="200" height="120" alt="image">
+    <p>Our summer offer runs until the end of August.</p>
+  </div>
+
+  <!-- DEFECT 1.1.1: alt is a filename. -->
+  <div class="card">
+    <img id="alt-is-filename" src="hero.png" width="200" height="120" alt="IMG_20240714_final_v2.jpg">
+    <p>Riders on the coast road.</p>
+  </div>
+
+  <!-- DEFECT 1.1.1: alt merely repeats the word photo. -->
+  <div class="card">
+    <img id="alt-says-photo" src="team.png" width="200" height="120" alt="photo">
+    <p>The workshop team in Bristol.</p>
+  </div>
+
+  <!-- DISTRACTOR: correctly marked decorative, adjacent text carries the meaning. -->
+  <div class="card">
+    <img id="good-decorative" src="divider.png" width="600" height="8" alt="">
+    <p>Section divider above is purely decorative.</p>
+  </div>
+
+  <!-- DEFECT 1.1.1: alt duplicates the visible caption, adding nothing and doubling the announcement. -->
+  <div class="card">
+    <img id="alt-duplicates-caption" src="award.png" width="200" height="120"
+         alt="Winner of the 2025 Independent Retailer Award">
+    <p>Winner of the 2025 Independent Retailer Award</p>
+  </div>
+
+  <!-- DISTRACTOR: an informative image whose alt is short but sufficient. -->
+  <div class="card">
+    <img id="good-alt-2" src="chart.png" width="300" height="200"
+         alt="Sales grew from 120 bikes in 2023 to 310 in 2025">
+    <p>Three years of growth.</p>
+  </div>
+</main>
+</body>
+</html>

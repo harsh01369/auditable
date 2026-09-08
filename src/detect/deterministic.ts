@@ -54,7 +54,19 @@ export async function runDeterministic(
   snapshot: PageSnapshot,
 ): Promise<DeterministicResult> {
   const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .options({
+      runOnly: {
+        type: 'tag',
+        values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'],
+      },
+      rules: {
+        // axe marks this rule experimental and so excludes it by default, even
+        // under a WCAG tag filter. It is the only mechanical check for 2.5.3,
+        // it is well defined, and our evaluation caught us missing a genuine
+        // label-in-name mismatch because of the default. Enabled deliberately.
+        'label-content-name-mismatch': { enabled: true },
+      },
+    })
     .analyze();
 
   const findings: Finding[] = [];
@@ -85,10 +97,18 @@ export async function runDeterministic(
     }
   }
 
+  // Only a fully automatable criterion can be "settled" by a clean engine run.
+  //
+  // For a partially automatable criterion, axe passing every node it understands
+  // says nothing about the nodes it cannot judge: it will happily pass an input
+  // whose only label is a placeholder, because a placeholder does supply an
+  // accessible name. Marking that criterion settled would tell the judgement
+  // pass to leave alone exactly the defects it exists to find.
   const clean = new Set<string>();
   for (const pass of results.passes) {
     for (const id of criterionIdsFromAxeTags(pass.tags)) {
-      if (!violated.has(id) && getCriterion(id)) clean.add(id);
+      const criterion = getCriterion(id);
+      if (criterion && criterion.automation === 'full' && !violated.has(id)) clean.add(id);
     }
   }
 

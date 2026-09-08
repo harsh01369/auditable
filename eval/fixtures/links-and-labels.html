@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Northwind Cycles - Support and returns</title>
+  <style>
+    body{font:16px/1.5 system-ui,sans-serif;color:#1a1a1a;background:#fff;margin:0;padding:2rem}
+    main{max-width:60rem;margin:0 auto}
+    a{color:#0b4f8a}
+    label{display:block;margin-top:1rem}
+    input,select,textarea{display:block;padding:.4rem;border:1px solid #767676;min-width:18rem}
+    .row{margin:1.25rem 0}
+    button{padding:.6rem 1rem;background:#0b4f8a;color:#fff;border:1px solid #0b4f8a}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Support and returns</h1>
+
+  <h2>Guides</h2>
+  <ul>
+    <!-- DISTRACTOR: link text fully describes the destination. -->
+    <li><a id="good-link-1" href="/returns-policy">Read our 30 day returns policy</a></li>
+
+    <!-- DEFECT 2.4.4: purpose not determinable from the link text. -->
+    <li>Our warranty covers frames for ten years. <a id="link-click-here" href="/warranty">Click here</a></li>
+
+    <!-- DEFECT 2.4.4: "read more" tells the user nothing. -->
+    <li>Fitting a new chain is straightforward. <a id="link-read-more" href="/guides/chain">Read more</a></li>
+
+    <!-- DISTRACTOR: short but self-describing. -->
+    <li><a id="good-link-2" href="/contact">Contact the Bristol workshop</a></li>
+
+    <!-- DEFECT 2.4.4: bare "here". -->
+    <li>To book a service, tap <a id="link-here" href="/book">here</a>.</li>
+
+    <!-- DISTRACTOR: ambiguous visible text rescued by an accessible name. -->
+    <li><a id="good-link-3" href="/sizing" aria-label="View the full bicycle sizing guide">More</a></li>
+  </ul>
+
+  <h2>Ask us a question</h2>
+  <form action="/support" method="post">
+    <!-- DISTRACTOR: correctly associated label. -->
+    <div class="row">
+      <label for="good-name">Your full name</label>
+      <input id="good-name" name="name" type="text">
+    </div>
+
+    <!-- DEFECT 3.3.2: placeholder used instead of a label. -->
+    <div class="row">
+      <input id="placeholder-only-email" name="email" type="email" placeholder="Email address">
+    </div>
+
+    <!-- DEFECT 3.3.2: label is adjacent text, not programmatically associated. -->
+    <div class="row">
+      <span id="order-text">Order number</span>
+      <input id="unassociated-order" name="order" type="text">
+    </div>
+
+    <!-- DISTRACTOR: labelled via aria-label. -->
+    <div class="row">
+      <input id="good-postcode" name="postcode" type="text" aria-label="Delivery postcode">
+    </div>
+
+    <!-- DEFECT 2.5.3: visible label text is not contained in the accessible name,
+         so a speech-input user saying "Submit enquiry" cannot address it. -->
+    <div class="row">
+      <button id="label-in-name-mismatch" type="submit" aria-label="Send">Submit enquiry</button>
+    </div>
+  </form>
+
+  <h2>Opening hours</h2>
+  <!-- DEFECT 1.3.1: a visual table built from divs, so the relationships exist
+       only in the styling and are lost to assistive technology. -->
+  <div id="fake-table" role="presentation">
+    <div><strong>Monday</strong> 9 to 5</div>
+    <div><strong>Tuesday</strong> 9 to 5</div>
+    <div><strong>Saturday</strong> 10 to 4</div>
+  </div>
+
+  <!-- DISTRACTOR: correct semantic table. -->
+  <table id="good-table">
+    <caption>Bank holiday hours</caption>
+    <thead><tr><th scope="col">Day</th><th scope="col">Hours</th></tr></thead>
+    <tbody><tr><td>Good Friday</td><td>Closed</td></tr></tbody>
+  </table>
+</main>
+</body>
+</html>

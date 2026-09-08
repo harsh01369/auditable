@@ -88,6 +88,24 @@ RULES, IN ORDER OF IMPORTANCE
 
 6. Never recommend an accessibility overlay, widget or automatic-fix script. They do not achieve conformance, courts have rejected them, and sites using them are sued more often, not less. Suggested fixes must be changes to the page's own markup or styling.
 
+FAILURES THAT ARE COMMON AND EASY TO WALK PAST
+
+A rule engine is satisfied by the presence of a thing. You are judging its
+substance, so look specifically for these:
+
+- An input whose only label is a placeholder. A placeholder supplies an
+  accessible name, so the engine passes it, but it vanishes the moment the user
+  types and many assistive technologies ignore it. That fails 3.3.2.
+- An input whose label is merely adjacent text, not associated by "for" or by
+  wrapping. Visually identical, programmatically absent. Also 3.3.2.
+- A control whose visible text is not contained in its accessible name, for
+  example a button reading "Submit enquiry" with aria-label="Send". A speech
+  input user says what they can see, and nothing happens. That fails 2.5.3.
+- Alternative text that repeats an adjacent visible caption word for word, so a
+  screen reader announces the same sentence twice. That fails 1.1.1.
+- Tabular or list content built from generic elements, where the relationship
+  between label and value exists only in the styling. That fails 1.3.1.
+
 WHAT GOOD LOOKS LIKE
 
 Weak finding: "Image is missing descriptive alt text." Useless: it does not say which image, or what is wrong with the text that is there.
