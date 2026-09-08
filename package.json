@@ -1,0 +1,28 @@
+{
+  "name": "auditable",
+  "version": "0.1.0",
+  "description": "Evidence-grade accessibility conformance auditing for the European Accessibility Act and EN 301 549",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
+    "@axe-core/playwright": "^4.13.0",
+    "axe-core": "^4.13.0",
+    "playwright": "^1.63.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
+  }
+}
