@@ -13,6 +13,7 @@
 
 import { automationCoverage, getCriterion } from '../core/wcag';
 import { buildAccessibilityStatement, conformanceStatus, type StatementInputs } from './statement';
+import { manualTestFor } from './manual';
 import type { AuditResult, Finding, Severity } from '../core/types';
 
 const SEVERITY_ORDER: Record<Severity, number> = {
@@ -204,6 +205,45 @@ ${result.rejected
   .map(
     (r) => `<tr><td class="tnum">${escapeHtml(r.criterionId)}</td><td><code>${escapeHtml(r.claimedSelector.slice(0, 90))}</code></td><td>${escapeHtml(r.reason)}</td></tr>`,
   )
+  .join('\n')}
+</tbody>
+</table>`
+    : ''
+}
+
+<h2>What a person still needs to test</h2>
+<p>These criteria cannot be settled by any automated or model-based method. They are
+not failures and they are not passes: they are the work that remains. Each one below
+says what to do and what a failure looks like, so a developer who is not an
+accessibility specialist can carry it out and reach a defensible answer.</p>
+<table>
+<thead><tr><th style="width:11rem">Criterion</th><th>How to test it</th><th>A failure looks like</th></tr></thead>
+<tbody>
+${result.coverage
+  .filter((c) => c.status === 'needs-human-review')
+  .map((c) => {
+    const test = manualTestFor(c.criterionId);
+    if (!test) return '';
+    return `<tr>
+  <td class="tnum"><strong>${escapeHtml(c.criterionId)}</strong><br>${escapeHtml(c.name)}<br><span style="color:var(--ink-faint)">Level ${c.level}</span></td>
+  <td>${escapeHtml(test.procedure)}</td>
+  <td style="color:var(--ink-soft)">${escapeHtml(test.failureLooksLike)}</td>
+</tr>`;
+  })
+  .join('\n')}
+</tbody>
+</table>
+
+${
+  result.failures.length > 0
+    ? `<h2>Pages that could not be audited</h2>
+<p>These pages were requested but not assessed, so nothing in this report says anything
+about them.</p>
+<table>
+<thead><tr><th>Page</th><th>Reason</th></tr></thead>
+<tbody>
+${result.failures
+  .map((f) => `<tr><td><code>${escapeHtml(f.url)}</code></td><td>${escapeHtml(f.reason)}</td></tr>`)
   .join('\n')}
 </tbody>
 </table>`

@@ -147,6 +147,8 @@ export interface AuditResult {
   startedAt: string;
   finishedAt: string;
   pages: PageAudit[];
+  /** Pages that could not be audited, and why. Reported rather than hidden. */
+  failures: { url: string; reason: string }[];
   findings: Finding[];
   rejected: RejectedFinding[];
   /** Criteria evaluated, and what we concluded about each. */

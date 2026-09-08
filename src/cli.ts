@@ -31,6 +31,7 @@ function parseArgs(argv: string[]) {
   let json: string | undefined;
   let screenshot = false;
   let report: string | undefined;
+  let crawl: number | undefined;
   let batchSize: number | undefined;
   let delayMs: number | undefined;
 
@@ -40,11 +41,12 @@ function parseArgs(argv: string[]) {
     else if (arg === '--json') json = argv[++i];
     else if (arg === '--screenshot') screenshot = true;
     else if (arg === '--report') report = argv[++i];
+    else if (arg === '--crawl') crawl = Number(argv[++i]);
     else if (arg === '--batch-size') batchSize = Number(argv[++i]);
     else if (arg === '--delay') delayMs = Number(argv[++i]);
     else if (!arg.startsWith('--')) urls.push(arg);
   }
-  return { urls, providerName, json, report, screenshot, batchSize, delayMs };
+  return { urls, providerName, json, report, screenshot, crawl, batchSize, delayMs };
 }
 
 function chooseProvider(name?: string): JudgementProvider {
@@ -61,7 +63,7 @@ function chooseProvider(name?: string): JudgementProvider {
 }
 
 async function main() {
-  const { urls, providerName, json, report, screenshot, batchSize, delayMs } = parseArgs(process.argv.slice(2));
+  const { urls, providerName, json, report, screenshot, crawl, batchSize, delayMs } = parseArgs(process.argv.slice(2));
   if (urls.length === 0) {
     console.error('Usage: tsx src/cli.ts <url> [...] [--provider anthropic|groq|none] [--json out.json]');
     process.exit(1);
@@ -80,6 +82,7 @@ async function main() {
   const result = await audit({
     urls,
     provider,
+    crawl,
     screenshot,
     batchSize,
     judgementDelayMs: delayMs,
@@ -104,6 +107,13 @@ async function main() {
     for (const r of result.rejected) {
       console.log(`  ${r.criterionId} at ${r.claimedSelector}: ${r.reason}`);
     }
+  }
+
+  if (result.failures.length > 0) {
+    console.log(`
+--- Pages that could not be audited (${result.failures.length}) ---`);
+    for (const f of result.failures) console.log(`  ${f.url}
+    ${f.reason}`);
   }
 
   const failed = result.coverage.filter((c) => c.status === 'fail').length;

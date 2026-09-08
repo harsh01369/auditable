@@ -15,6 +15,7 @@ import { chromium, type Browser } from 'playwright';
 import { CRITERIA, automationCoverage, getCriterion } from './core/wcag';
 import { capturePage } from './capture/snapshot';
 import { CaptureIntegrityError, checkIntegrity } from './capture/integrity';
+import { discoverPages } from './capture/crawl';
 import { runDeterministic } from './detect/deterministic';
 import { verifyClaims } from './detect/verify';
 import { NullJudgementProvider } from './detect/providers';
@@ -28,7 +29,15 @@ import type {
 } from './core/types';
 
 export interface AuditOptions {
+  /** Pages to audit. With `crawl` set, the first is the starting point. */
   urls: string[];
+  /**
+   * Discover up to this many pages from the first URL, honouring robots.txt.
+   * Omit to audit only the URLs given.
+   */
+  crawl?: number;
+  /** Courtesy pause between page requests, in milliseconds. */
+  politenessMs?: number;
   provider?: JudgementProvider;
   screenshot?: boolean;
   /** Elements sent to the judgement provider per request. */
@@ -47,6 +56,7 @@ export async function audit(options: AuditOptions): Promise<AuditResult> {
   const findings: Finding[] = [];
   const rejected: RejectedFinding[] = [];
   const pages: PageAudit[] = [];
+  const failures: { url: string; reason: string }[] = [];
   const cleanAcrossSite = new Set<string>();
   const incompleteAcrossSite = new Set<string>();
 
@@ -59,7 +69,22 @@ export async function audit(options: AuditOptions): Promise<AuditResult> {
     // Cloudflare's "Just a moment..." page. See capture/integrity.ts.
     const context = await browser.newContext();
 
-    for (const url of options.urls) {
+    let targets = options.urls;
+    if (options.crawl && options.crawl > 0 && options.urls[0]) {
+      log(`Discovering up to ${options.crawl} page(s) from ${options.urls[0]}`);
+      const discovered = await discoverPages(browser, options.urls[0], {
+        maxPages: options.crawl,
+        politenessMs: options.politenessMs,
+        onProgress: log,
+      });
+      targets = discovered.urls;
+      log(`  ${targets.length} page(s) to audit`);
+      if (discovered.skipped.length > 0) {
+        log(`  ${discovered.skipped.length} url(s) skipped because robots.txt disallows them`);
+      }
+    }
+
+    for (const [pageIndex, url] of targets.entries()) {
       const page = await context.newPage();
       try {
         log(`Capturing ${url}`);
@@ -106,8 +131,17 @@ export async function audit(options: AuditOptions): Promise<AuditResult> {
         }
 
         pages.push({ url: snapshot.url, title: snapshot.title, findingCount: pageFindingCount });
+      } catch (error) {
+        // One unreachable or challenged page must not lose the whole audit; the
+        // failure is recorded so the report can say which pages went untested.
+        const reason = (error as Error).message.split(/\r?\n/)[0] ?? String(error);
+        failures.push({ url, reason });
+        log(`  skipped: ${reason}`);
       } finally {
         await page.close();
+        if (pageIndex < targets.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, options.politenessMs ?? 700));
+        }
       }
     }
   } finally {
@@ -121,6 +155,7 @@ export async function audit(options: AuditOptions): Promise<AuditResult> {
     startedAt,
     finishedAt: new Date().toISOString(),
     pages,
+    failures,
     findings,
     rejected,
     coverage,
