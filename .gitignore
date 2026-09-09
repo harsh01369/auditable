@@ -5,3 +5,5 @@ dist/
 .env.*
 !.env.example
 audit-*.json
+dist/
+wcag-evidence-*.tgz

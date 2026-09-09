@@ -139,7 +139,23 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
+main().catch((err: unknown) => {
+  const message = err instanceof Error ? err.message : String(err);
+  const missingBrowser =
+    /Executable doesn't exist|playwright install|browserType\.launch/i.test(message);
+
+  if (missingBrowser) {
+    // The single most likely first run failure for anyone arriving via npx.
+    console.error('');
+    console.error('Chromium is not installed yet. This tool drives a real browser, because');
+    console.error('auditing markup that never rendered would be worthless.');
+    console.error('');
+    console.error('  npx playwright install chromium');
+    console.error('');
+    console.error('Then run the same command again.');
+    process.exit(1);
+  }
+
+  console.error(message);
   process.exit(1);
 });

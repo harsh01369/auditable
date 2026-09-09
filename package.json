@@ -1,15 +1,33 @@
 {
-  "name": "auditable",
+  "name": "wcag-evidence",
   "version": "0.1.0",
-  "description": "Evidence-grade accessibility conformance auditing for the European Accessibility Act and EN 301 549",
-  "main": "index.js",
+  "description": "Accessibility audits that show their working. WCAG 2.2 AA and EN 301 549 for the European Accessibility Act, where every model finding is verified against the real DOM before it is reported.",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.build.json --emitDeclarationOnly --declarationDir dist",
+    "prepublishOnly": "npm run build",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eval": "tsx eval/run.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "wcag22",
+    "en301549",
+    "european-accessibility-act",
+    "eaa",
+    "audit",
+    "compliance",
+    "axe-core",
+    "playwright",
+    "conformance",
+    "vpat",
+    "accessibility-statement"
+  ],
+  "author": "Harsh Khetia",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
@@ -24,5 +42,25 @@
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vitest": "^5.0.0"
+  },
+  "bin": {
+    "wcag-evidence": "dist/cli.js"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "EVALUATION.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harsh01369/auditable.git"
+  },
+  "homepage": "https://harsh01369.github.io/auditable/",
+  "bugs": {
+    "url": "https://github.com/harsh01369/auditable/issues"
   }
 }
